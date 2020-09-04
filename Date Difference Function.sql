@@ -31,7 +31,6 @@ RETURN @DayCount
 END;
 
 
-
 -- DECLARE @StartDate DATETIME = '2020-09-01',
 -- @EndDate DATETIME = '2020-09-30';
 
