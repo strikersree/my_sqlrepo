@@ -36,7 +36,6 @@ END;
 
 
 
-
 --     SELECT DATEDIFF(DD, @StartDate, @EndDate)  
 --     - (SELECT COUNT([Date]) FROM dbo.Dim_FiscalCalendar WHERE [Date] BETWEEN @StartDate AND DATEADD(d,1, @EndDate) 
 --     AND IsHoliday = 1)
