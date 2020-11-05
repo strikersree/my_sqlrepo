@@ -1,7 +1,7 @@
 --CREATED BY: Srinivas Kannan
 --CREATED DATE: 05-MAY-2020
 
-/* DESCRIPTION: This function replicates the same functionality of CHARINDEX() function with a added advanatage of 
+/* DESCRIPTION: This function replicates the same functionality of CHARINDEX() function with an added advanatage of 
 getting the nTH occurances of a string. The function is generic and can be used across any SQL versions. 
 */
 

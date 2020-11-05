@@ -1,6 +1,6 @@
 
 --Created Date: 2020-09-05
---Created by: Srinivas Kannan
+--Author: Srinivas Kannan
 
 /*Description: The Following procedure parses the JSON data into SQL Columns without using FOR JSON function
 This can be really helpful for SQL Server versions where the compatability level is less than 130. 
