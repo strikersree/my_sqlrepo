@@ -13,7 +13,7 @@ agg_func - The aggregate function that you want to apply on the column
 */
 
 /*
-CALL dynamic_pivot('account_rep','booking_sales_mtn','TSG_Cross_Sell', 'SUM','local_amount');
+CALL dynamic_pivot('account_rep','booking_sales_mtn','Cross_Sell', 'SUM','local_amount');
 */
 
 CREATE OR REPLACE PROCEDURE `dynamic_pivot`(IN mastercolumn VARCHAR(70), IN pivotcolumn VARCHAR(100), IN tablename VARCHAR(50), IN agg_func CHAR(10), IN agg_col VARCHAR(20) )
