@@ -1,6 +1,20 @@
 
+-- AUTHOR : SRINIVAS KANNAN
+-- MODIFIED DATE : 06-Jun-2022
+-- DESCRIPTION : Performs pivoting in MariaDB and MySQL based on user inputs
 
 
+/* 
+mastercolumn - The field that you want to keep / non-pivoted column
+pivotcolumn - The field that contain values that will become column headers
+tablename - The table from where you want to get the data
+agg_col - column being aggregated
+agg_func - The aggregate function that you want to apply on the column
+*/
+
+/*
+CALL dynamic_pivot('account_rep','booking_sales_mtn','TSG_Cross_Sell', 'SUM','local_amount');
+*/
 
 CREATE OR REPLACE PROCEDURE `dynamic_pivot`(IN mastercolumn VARCHAR(70), IN pivotcolumn VARCHAR(100), IN tablename VARCHAR(50), IN agg_func CHAR(10), IN agg_col VARCHAR(20) )
 
@@ -67,11 +81,6 @@ BEGIN
 
 END
 
-
-
--- Test 
-
-CALL dynamic_pivot('account_rep','booking_sales_mtn','TSG_Cross_Sell', 'SUM','local_amount');
 
 
 
