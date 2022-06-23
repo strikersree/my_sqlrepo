@@ -1,7 +1,6 @@
-
 -- AUTHOR : SRINIVAS KANNAN
 -- MODIFIED DATE : 06-Jun-2022
--- DESCRIPTION : Performs pivoting in MariaDB and MySQL based on user inputs
+-- DESCRIPTION : Performs pivoting in MariaDB and MySQL using store procedure
 
 
 /* 
@@ -16,13 +15,15 @@ agg_func - The aggregate function that you want to apply on the column
 CALL dynamic_pivot('account_rep','booking_sales_mtn','Cross_Sell', 'SUM','local_amount');
 */
 
+
+
 CREATE OR REPLACE PROCEDURE `dynamic_pivot`(IN mastercolumn VARCHAR(70), IN pivotcolumn VARCHAR(100), IN tablename VARCHAR(50), IN agg_func CHAR(10), IN agg_col VARCHAR(20) )
 
 BEGIN 
 	-- convert pivot column into list
-	EXECUTE IMMEDIATE CONCAT('select GROUP_CONCAT(distinct ',pivotcolumn, ' SEPARATOR ";") into @cols FROM ',tablename);
+	EXECUTE IMMEDIATE CONCAT('select GROUP_CONCAT(distinct ',pivotcolumn, ' SEPARATOR ";") , COUNT(distinct `',pivotcolumn,'`) into @cols, @maxx  FROM ',tablename);
 
-	EXECUTE IMMEDIATE CONCAT('select COUNT(distinct `',pivotcolumn,'`) INTO @maxx FROM ',tablename,' ;');
+	 -- EXECUTE IMMEDIATE CONCAT('select COUNT(distinct `',pivotcolumn,'`) INTO @maxx FROM ',tablename,' ;');
 
 	SET @minn = - 1 ;
 	SET @factor = -1;
@@ -45,22 +46,22 @@ BEGIN
 	
 		IF agg_func = 'COUNT' 
 		THEN
-			EXECUTE IMMEDIATE CONCAT('INSERT INTO temp( `',mastercolumn,'`,','`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'`',')',' SELECT distinct `',mastercolumn,'` ,COUNT(CASE WHEN `',pivotcolumn,'` = "',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'"',' THEN 1 ELSE NULL END) AS ', '`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1), '`',' FROM ',tablename,' GROUP BY `',mastercolumn,'`;');
+			EXECUTE IMMEDIATE CONCAT('INSERT INTO temp( `',mastercolumn,'`,','`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'`',')',' SELECT `',mastercolumn,'` ,COUNT(CASE WHEN `',pivotcolumn,'` = "',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'"',' THEN 1 ELSE NULL END) AS ', '`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1), '`',' FROM ',tablename,' GROUP BY `',mastercolumn,'`;');
 			SET @minn = @minn - 1 ;
 		ELSE 
-			EXECUTE IMMEDIATE CONCAT('INSERT INTO temp( `',mastercolumn,'`,','`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'`',')',' SELECT distinct `',mastercolumn,'` ,CASE WHEN `',pivotcolumn,'` = "',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'"',' THEN ',agg_func,'(',agg_col,') ELSE NULL END AS ', '`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1), '`',' FROM ',tablename,' GROUP BY `',mastercolumn,'`;');
+			EXECUTE IMMEDIATE CONCAT('INSERT INTO temp( `',mastercolumn,'`,','`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'`',')',' SELECT `',mastercolumn,'` ,CASE WHEN `',pivotcolumn,'` = "',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1),'"',' THEN ',agg_func,'(',agg_col,') ELSE NULL END AS ', '`',SUBSTRING_INDEX(SUBSTRING_INDEX(@cols, ';', @minn), ';', 1), '`',' FROM ',tablename,' GROUP BY `',mastercolumn,'`;');
 			SET @minn = @minn - 1 ;
 		END IF ;
 	
 	END WHILE;
 
-	CREATE TEMPORARY TABLE pivot_results AS (SELECT * FROM temp WHERE 1=2);
+	CREATE OR REPLACE TEMPORARY TABLE pivot_results AS (SELECT * FROM temp WHERE 1=2);
 
 	SET @minn = - 1 ;
 
 	SET @groupcolumn = '';
 	
-	SET @groupquery = CONCAT('SELECT `',mastercolumn,'` ,');
+	SET @groupquery = CONCAT('SELECT distinct `',mastercolumn,'` ,');
 
 	WHILE  @minn >= @maxx DO 
 		IF @minn = @maxx THEN 
@@ -80,6 +81,9 @@ BEGIN
 
 
 END
+
+
+
 
 
 
